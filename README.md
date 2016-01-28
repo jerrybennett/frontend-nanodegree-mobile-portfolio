@@ -1,73 +1,49 @@
-## Website Performance Optimization portfolio project
+# FEND P4: Website Performance Optimization
 
-Your challenge, if you wish to accept it (and we sure hope you will), is to optimize this online portfolio for speed! In particular, optimize the critical rendering path and make this page render as quickly as possible by applying the techniques you've picked up in the [Critical Rendering Path course](https://www.udacity.com/course/ud884).
+This project focuses on website performance optimization and has 2 main goals:
 
-To get started, check out the repository, inspect the code,
+1. Get PageSpeed results above 90 on 'index.html.'
+2. Optimize Frames Per Second in 'pizza.html.' Specifically get FPS above 60 and eliminate 'jank'.
 
-### Getting started
+I used Gulp to automatically perform certain optimizations such as, check the quality of JS, optimize images, minify CSS and JS, etc. You can inspect my gulpfile.js and/or package.json to see what plugins were used. I used this tutorial to get up and running with Gulp:
+http://www.sitepoint.com/introduction-gulp-js/
 
-####Part 1: Optimize PageSpeed Insights score for index.html
+####Part 1: Optimize PageSpeed Insights score (above 90) for 'index.html'
 
-Some useful tips to help you get started:
+1. Used Google's "Web Font Loader" (https://github.com/typekit/webfontloader) to load 'Open Sans.' (line 71 on src/index.html)
+2. Put a media query on the 'print.css' to prevent render blocking. (line 10 on src/index.html)
+3. Compressed css with CSS Compressor: 'http://csscompressor.com/'
+4. Inlined CSS from 'src/css/style.css' to prevent render blocking. (line 12 on src/index.html)
+5. Moved all render blocking javascript to the bottom of
+   the page just above the closing body tag, and added `async` tag to the scripts.
+6. Optimized images with Photoshop's 'save for web' tool and/or
+   downloaded external images, placed them in local 'src/img' folder and
+   created new links to images.
 
-1. Check out the repository
-1. To inspect the site on your phone, you can run a local server
+####Check the PageSpeed Insights results here:
+'https://developers.google.com/speed/pagespeed/insights/?url=http%3A%2F%2Fjerrybennett.me%2Ffrontend-nanodegree-mobile-portfolio%2Fdist%2Findex.html&tab=mobile'
 
-  ```bash
-  $> cd /path/to/your-project-folder
-  $> python -m SimpleHTTPServer 8080
-  ```
 
-1. Open a browser and visit localhost:8080
-1. Download and install [ngrok](https://ngrok.com/) to make your local server accessible remotely.
+####Part 2: Optimize Frames per Second in 'pizza.html'
 
-  ``` bash
-  $> cd /path/to/your-project-folder
-  $> ngrok 8080
-  ```
+- Reduce time to resize pizzas to less than 5ms on 'pizza.html' page.
+- Optimize Frames Per Second (get FPS above 60 and eliminate 'jank') on 'pizza.html' page.
 
-1. Copy the public URL ngrok gives you and try running it through PageSpeed Insights! Optional: [More on integrating ngrok, Grunt and PageSpeed.](http://www.jamescryer.com/2014/06/12/grunt-pagespeed-and-ngrok-locally-testing/)
+The following optimizations were made to 'src/views/js/main.js':
 
-Profile, optimize, measure... and then lather, rinse, and repeat. Good luck!
+1. Changed function `changePizzaSizes` (line 460) to prevent forced synchronous layouts.
+2. Changed `document.querySelectorAll` to `document.getElementsByClassName` as it is a faster way of accessing `.randomPizzaContainer` in the DOM. (line 475)
+3. Changed `document.querySelectorAll()` in `var items` (on line 530) to `document.getElementsByClassName()` as it is a faster method to access `.mover` in the DOM.
+4. Cached `document.body.scrollTop / 1250` calculation in `var scrollTop` (line 534), outside of the for loop to prevent layout thrashing.
+5. Changed the number of moving background pizzas being generated (appended to `#movingPizzas1`) from 200 to 55. (line 557)
 
-####Part 2: Optimize Frames per Second in pizza.html
+####Other Optimizations for Part 2
 
-To optimize views/pizza.html, you will need to modify views/js/main.js until your frames per second rate is 60 fps or higher. You will find instructive comments in main.js. 
+1. In 'src/views/images' file I changed the size of 'pizza.png' to 100px wide and renamed it 'pizza1.png.'
 
-You might find the FPS Counter/HUD Display useful in Chrome developer tools described here: [Chrome Dev Tools tips-and-tricks](https://developer.chrome.com/devtools/docs/tips-and-tricks).
+2. In 'src/views/css/style.css' I added `z-index: -1;`, `transform: translateZ(0);`, `transform: translate3d(0,0,0);` and `will-change: transform;` to `.mover` in order to reduce paint time by putting it on a new layer and send rendering to the GPU for better performance.
 
-### Optimization Tips and Tricks
-* [Optimizing Performance](https://developers.google.com/web/fundamentals/performance/ "web performance")
-* [Analyzing the Critical Rendering Path](https://developers.google.com/web/fundamentals/performance/critical-rendering-path/analyzing-crp.html "analyzing crp")
-* [Optimizing the Critical Rendering Path](https://developers.google.com/web/fundamentals/performance/critical-rendering-path/optimizing-critical-rendering-path.html "optimize the crp!")
-* [Avoiding Rendering Blocking CSS](https://developers.google.com/web/fundamentals/performance/critical-rendering-path/render-blocking-css.html "render blocking css")
-* [Optimizing JavaScript](https://developers.google.com/web/fundamentals/performance/critical-rendering-path/adding-interactivity-with-javascript.html "javascript")
-* [Measuring with Navigation Timing](https://developers.google.com/web/fundamentals/performance/critical-rendering-path/measure-crp.html "nav timing api"). We didn't cover the Navigation Timing API in the first two lessons but it's an incredibly useful tool for automated page profiling. I highly recommend reading.
-* <a href="https://developers.google.com/web/fundamentals/performance/optimizing-content-efficiency/eliminate-downloads.html">The fewer the downloads, the better</a>
-* <a href="https://developers.google.com/web/fundamentals/performance/optimizing-content-efficiency/optimize-encoding-and-transfer.html">Reduce the size of text</a>
-* <a href="https://developers.google.com/web/fundamentals/performance/optimizing-content-efficiency/image-optimization.html">Optimize images</a>
-* <a href="https://developers.google.com/web/fundamentals/performance/optimizing-content-efficiency/http-caching.html">HTTP caching</a>
+####You can open my 'pizza.html' page with Chrome and use Chrome Developer Tools to measure performance:
+'http://jerrybennett.me/frontend-nanodegree-mobile-portfolio/dist/views/pizza.html'
 
-### Customization with Bootstrap
-The portfolio was built on Twitter's <a href="http://getbootstrap.com/">Bootstrap</a> framework. All custom styles are in `dist/css/portfolio.css` in the portfolio repo.
-
-* <a href="http://getbootstrap.com/css/">Bootstrap's CSS Classes</a>
-* <a href="http://getbootstrap.com/components/">Bootstrap's Components</a>
-
-### Sample Portfolios
-
-Feeling uninspired by the portfolio? Here's a list of cool portfolios I found after a few minutes of Googling.
-
-* <a href="http://www.reddit.com/r/webdev/comments/280qkr/would_anybody_like_to_post_their_portfolio_site/">A great discussion about portfolios on reddit</a>
-* <a href="http://ianlunn.co.uk/">http://ianlunn.co.uk/</a>
-* <a href="http://www.adhamdannaway.com/portfolio">http://www.adhamdannaway.com/portfolio</a>
-* <a href="http://www.timboelaars.nl/">http://www.timboelaars.nl/</a>
-* <a href="http://futoryan.prosite.com/">http://futoryan.prosite.com/</a>
-* <a href="http://playonpixels.prosite.com/21591/projects">http://playonpixels.prosite.com/21591/projects</a>
-* <a href="http://colintrenter.prosite.com/">http://colintrenter.prosite.com/</a>
-* <a href="http://calebmorris.prosite.com/">http://calebmorris.prosite.com/</a>
-* <a href="http://www.cullywright.com/">http://www.cullywright.com/</a>
-* <a href="http://yourjustlucky.com/">http://yourjustlucky.com/</a>
-* <a href="http://nicoledominguez.com/portfolio/">http://nicoledominguez.com/portfolio/</a>
-* <a href="http://www.roxannecook.com/">http://www.roxannecook.com/</a>
-* <a href="http://www.84colors.com/portfolio.html">http://www.84colors.com/portfolio.html</a>
+You can also download this repository to inspect the code.
